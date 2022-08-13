@@ -35,7 +35,7 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/deploym
 
 # Cryptex
 
-Cryptex is a Crypto Currency Exchange Platform. It built on the Block Chain Technology using Web 3.0. It helps the users to exchange Crypto Current among themselves.
+### Cryptex is a Crypto Currency Exchange Platform. It built on the Block Chain Technology using Web 3.0. It helps the users to exchange Crypto Currency among themselves.
 
 ## Project Setup
 ### I. Clone GitHub Repo
