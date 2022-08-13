@@ -22,8 +22,11 @@
     "react-chartjs-2": "^4.3.1",
     "react-dom": "18.2.0",
     "react-icons": "^4.4.0",
+    "react-loader-spinner": "^5.1.7-beta.1",
     "react-modal": "^3.15.1",
-    "styled-components": "^5.3.5"
+    "react-spinner-loader": "^1.1.1",
+    "styled-components": "^5.3.5",
+    "vercel": "^28.0.1"
   },
   "devDependencies": {
     "eslint": "8.21.0",

@@ -1,17 +1,58 @@
-import React, { useState } from 'react';
+/* eslint-disable @next/next/no-img-element */
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { FaWallet } from 'react-icons/fa';
+import imageUrlBuilder from '@sanity/image-url';
+import { client } from '../../lib/sanity';
 
 const Transfer = ({ selectedToken, setAction, thirdWebTokens, walletAddress }) => {
-  const [amount, setAmount] = useState();
-  const [recipient, setRecipient] = useState();
+  const [amount, setAmount] = useState('');
+  const [recipient, setRecipient] = useState('');
+  const [imageUrl, setImageUrl] = useState(null);
+  const [activeThirdWebToken, setActiveThirdWebToken] = useState();
+  const [balance, setBalance] = useState('Fetching...');
+
+  useEffect(() => {
+    const activeToken = thirdWebTokens.find(token => token.address === selectedToken.contractAddress);
+    setActiveThirdWebToken(activeToken);
+  }, [thirdWebTokens, selectedToken])
+
+  useEffect(() => {
+    const url = imageUrlBuilder(client).image(selectedToken.logo).url();
+    setImageUrl(url);
+  }, [selectedToken])
+
+  useEffect(() => {
+    const getBalance = async () => {
+      const balance = await activeThirdWebToken.balanceOf(walletAddress);
+      setBalance(balance.displayValue);
+    }
+
+    if (activeThirdWebToken) {
+      getBalance();
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeThirdWebToken])
+
+  const sendCrypto = async (amount, recipient) => {
+    console.log('Sending Crypto...');
+
+    if (activeThirdWebToken && amount && recipient) {
+      setAction('Transferring')
+      const tx = await activeThirdWebToken.transfer(recipient, amount.toString().concat('000000000000000000'));
+      console.log(tx);
+      setAction('Transferred');
+    } else {
+      console.error('Missing Data');
+    }
+  }
 
   return (
     <Wrapper>
       <Amount>
         <FlexInputContainer>
           <FlexInput placeholder='0' type={'number'} value={amount} onChange={(e) => setAmount(e.target.value)} />
-          <span>ETH</span>
+          <span>{selectedToken.symbol}</span>
         </FlexInputContainer>
         <Warning style={{ color: amount && '#0a0b0d' }}>Amount is a required field!</Warning>
       </Amount>
@@ -24,20 +65,20 @@ const Transfer = ({ selectedToken, setAction, thirdWebTokens, walletAddress }) =
         <Divider />
         <Row>
           <FieldName>Pay With</FieldName>
-          <CoinSelectList>
+          <CoinSelectList onClick={() => setAction('Select')}>
             <Icon>
-              <img src={'https://theme.zdassets.com/theme_assets/2313093/fe875eef30ee9649f253e8188f3438bb3be27e96.png'} alt="" />
+              <img src={imageUrl} alt="" />
             </Icon>
-            <CoinName>Ethereum</CoinName>
+            <CoinName>{selectedToken.name}</CoinName>
           </CoinSelectList>
         </Row>
       </TransferForm>
       <Row>
-        <Continue>Continue</Continue>
+        <Continue onClick={() => sendCrypto(amount, recipient)}>Continue</Continue>
       </Row>
       <Row>
-        <BalanceTitle>ETH Balance</BalanceTitle>
-        <Balance>1.2 ETH</Balance>
+        <BalanceTitle>{selectedToken.symbol} Balance</BalanceTitle>
+        <Balance>{balance} {selectedToken.symbol}</Balance>
       </Row>
     </Wrapper>
   )

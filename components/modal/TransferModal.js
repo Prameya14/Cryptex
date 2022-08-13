@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
+import CoinSelector from './CoinSelector';
 import Transfer from './Transfer';
+import { TailSpin } from 'react-loader-spinner';
+import Receive from './Receive';
 
 const TransferModal = ({ sanityTokens, thirdWebTokens, walletAddress }) => {
   const [action, setAction] = useState('Send');
-  const [selectedToken, setSelectedToken] = useState(sanityTokens[0])
+  const [selectedToken, setSelectedToken] = useState(sanityTokens[1])
 
   const selectedStyle = {
     color: '#3773f5',
@@ -17,9 +20,20 @@ const TransferModal = ({ sanityTokens, thirdWebTokens, walletAddress }) => {
   const selectedModal = option => {
     switch (option) {
       case 'Send':
-        return <Transfer selectedToken={selectedToken} setAction={setAction} thirdWebTokens={thirdWebTokens} walletAddress={walletAddress} />
+        return <Transfer selectedToken={selectedToken} setAction={setAction} thirdWebTokens={thirdWebTokens} walletAddress={walletAddress} />;
       case 'Receive':
-        return <h2>Receive</h2>
+        return <Receive setAction={setAction} selectedToken={selectedToken} walletAddress={walletAddress} />;
+      case 'Select':
+        return <CoinSelector setAction={setAction} selectedToken={selectedToken} setSelectedToken={setSelectedToken} sanityTokens={sanityTokens} thirdWebTokens={thirdWebTokens} walletAddress={walletAddress} />;
+      case 'Transferring':
+        return (
+          <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', fontSize: '1.5rem' }}>
+            <TailSpin height={100} width={100} color={'#3773f5'} ariaLabel={'Loading'} />
+            <h2 style={{ fontWeight: '500' }}>Transfer in progress...</h2>
+          </div>
+        );
+      case 'Transferred':
+        return <div style={{ width: '100%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', fontSize: '2rem', fontWeight: '500', color: '#27ad75' }}>Transfer Complete</div>
       default:
         return <h2>Send</h2>
     }
